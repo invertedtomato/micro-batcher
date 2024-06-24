@@ -13,7 +13,7 @@ var job1 = batcher.Submit(new SampleJob(1));
 var job2 = batcher.Submit(new SampleJob(2));
 var job3 = batcher.Submit(new SampleJob(3));
 
-// Wait for jobs to complete
+// Wait for jobs to complete (optional, but a "shutdown method" is desired)
 batcher.Dispose();
 
 // Print results
