@@ -32,7 +32,7 @@ public readonly record struct Options()
     /// </summary>
     public Options WithMaxDelayPerJob(TimeSpan value)
     {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value.Ticks, nameof(value));
+        ArgumentOutOfRangeException.ThrowIfNegative(value.Ticks, nameof(value));
         return this with
         {
             MaxDelayPerJob = value

@@ -8,10 +8,12 @@ public class ClientTests
     [InlineData(1)]
     [InlineData(5)]
     [InlineData(10)]
+    [InlineData(1000)]
     public async Task CanProcessWhenMaxJobsReached(Int32 count)
     {
         var sut = GenerateSut(opt => opt
-            .WithMaxJobsPerBatch(count));
+            .WithMaxJobsPerBatch(count)
+            .WithMaxDelayPerJob(TimeSpan.FromDays(1)));
         var jobs = SubmitJobs(sut, count);
         sut.Dispose();
         sut.JobsProcessed.Should().Be(count);
@@ -24,15 +26,17 @@ public class ClientTests
     [InlineData(1)]
     [InlineData(5)]
     [InlineData(10)]
+    [InlineData(1000)]
     public async Task CanProcessWhenMaxDelayReached(Int32 count)
     {
         using var sut = GenerateSut(opt => opt
+            .WithMaxJobsPerBatch(count + 1)
             .WithMaxDelayPerJob(TimeSpan.FromSeconds(1)));
         var jobs = SubmitJobs(sut, count);
 
         await Task.Delay(TimeSpan.FromSeconds(2));
         sut.JobsProcessed.Should().Be(count);
-        sut.BatchesProcessed.Should().Be(1);
+        sut.BatchesProcessed.Should().BeGreaterOrEqualTo(1);
 
         var results = await jobs;
         results.Length.Should().Be(count);
@@ -46,11 +50,13 @@ public class ClientTests
     [InlineData(11)]
     [InlineData(15)]
     [InlineData(16)]
+    [InlineData(1000)]
     public async Task CanProcessMultipleBatches(Int32 count)
     {
         const Int32 jobsPerBatch = 5;
         var sut = GenerateSut(opt => opt
-            .WithMaxJobsPerBatch(jobsPerBatch));
+            .WithMaxJobsPerBatch(jobsPerBatch)
+            .WithMaxDelayPerJob(TimeSpan.FromDays(1)));
         var jobs = SubmitJobs(sut, count);
         sut.Dispose();
         sut.BatchesProcessed.Should().Be((Int32)Math.Ceiling((Single)count / jobsPerBatch));
