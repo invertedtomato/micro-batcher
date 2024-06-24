@@ -14,7 +14,7 @@ var job2 =  batcher.Submit(new SampleJob(2));
 var job3 =  batcher.Submit(new SampleJob(3));
 
 // Wait for jobs to complete
-batcher.Dispose(); // The following `WhenAll` effectively does the same thing, however there is a desire for a "shutdown method".
+batcher.Dispose();
 
 // Print results
 Console.WriteLine(await job1);
