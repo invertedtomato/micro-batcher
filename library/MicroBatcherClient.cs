@@ -17,19 +17,32 @@ public sealed class MicroBatcherClient<TJob, TJobResult> : IDisposable
     private readonly ConcurrentQueue<JobRecord<TJob, TJobResult>> _queue = new();
     private readonly Object _processLock = new();
     private Boolean _isDisposed;
+    private Int64 _batchesProcessed;
+    private Int64 _jobsProcessed;
+
+    /// <summary>
+    /// Number of batches that have been processed since creation.
+    /// </summary>
+    public Int64 BatchesProcessed => _batchesProcessed;
+
+    /// <summary>
+    /// Number of jobs that have been processed since creation.
+    /// </summary>
+    public Int64 JobsProcessed => _jobsProcessed;
+
 
     /// <summary>
     /// Normal constructor for batcher
     /// </summary>
     /// <param name="processor">Processor to handle batches once ready</param>
     /// <param name="optionBuilder">Fluent option builder</param>
-    public MicroBatcherClient(IBatchProcessor<TJob, TJobResult> processor, Func<Options, Options> optionBuilder)
+    public MicroBatcherClient(IBatchProcessor<TJob, TJobResult> processor, Func<Options, Options>? optionBuilder = null)
     {
         ArgumentNullException.ThrowIfNull(processor, nameof(processor));
         ArgumentNullException.ThrowIfNull(optionBuilder, nameof(optionBuilder));
 
         _processor = processor;
-        _options = optionBuilder(new());
+        _options = optionBuilder?.Invoke(new()) ?? new();
     }
 
     /// <summary>
@@ -55,6 +68,8 @@ public sealed class MicroBatcherClient<TJob, TJobResult> : IDisposable
         var records = _queue.DequeueAll();
         if (records.Count == 0) return;
         _processor.Process(records);
+        Interlocked.Increment(ref _batchesProcessed);
+        Interlocked.Add(ref _jobsProcessed, records.Count);
     }
 
     /// <summary>
