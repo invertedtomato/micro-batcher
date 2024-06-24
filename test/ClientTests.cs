@@ -12,10 +12,12 @@ public class ClientTests
     {
         var sut = GenerateSut(opt => opt
             .WithJobCountTarget(count));
-        _ = SubmitJobs(sut, count);
+        var jobs = SubmitJobs(sut, count);
         sut.Dispose();
         sut.JobsProcessed.Should().Be(count);
         sut.BatchesProcessed.Should().Be(1);
+        var results = await jobs;
+        results.Length.Should().Be(count);
     }
 
     [Theory]
@@ -31,16 +33,18 @@ public class ClientTests
         const Int32 jobsPerBatch = 5;
         var sut = GenerateSut(opt => opt
             .WithJobCountTarget(jobsPerBatch));
-        _ = SubmitJobs(sut, count);
+        var jobs = SubmitJobs(sut, count);
         sut.Dispose();
         sut.BatchesProcessed.Should().Be((Int32)Math.Ceiling((Single)count / jobsPerBatch));
         sut.JobsProcessed.Should().Be(count);
+        var results = await jobs;
+        results.Length.Should().Be(count);
     }
 
     private static MicroBatcherClient<Job, JobResult> GenerateSut(Func<Options, Options>? optionBuilder = null) =>
         new(new BatchProcessor(), optionBuilder);
 
-    private static async Task SubmitJobs(MicroBatcherClient<Job, JobResult> sut, Int32 count) =>
+    private static async Task<JobResult[]> SubmitJobs(MicroBatcherClient<Job, JobResult> sut, Int32 count) =>
         await Task.WhenAll(Enumerable
             .Range(0, count)
             .Select(i => new Job(i))
