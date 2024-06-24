@@ -12,7 +12,7 @@ public class ClientTests
     {
         var sut = GenerateSut(opt => opt
             .WithJobCountTarget(count));
-        await SubmitJobs(sut, count);
+        _ = SubmitJobs(sut, count);
         sut.Dispose();
         sut.JobsProcessed.Should().Be(count);
         sut.BatchesProcessed.Should().Be(1);
@@ -31,7 +31,7 @@ public class ClientTests
         const Int32 jobsPerBatch = 5;
         var sut = GenerateSut(opt => opt
             .WithJobCountTarget(jobsPerBatch));
-        await SubmitJobs(sut, count);
+        _ = SubmitJobs(sut, count);
         sut.Dispose();
         sut.BatchesProcessed.Should().Be((Int32)Math.Ceiling((Single)count / jobsPerBatch));
         sut.JobsProcessed.Should().Be(count);
