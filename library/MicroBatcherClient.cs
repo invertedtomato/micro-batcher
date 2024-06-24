@@ -18,19 +18,7 @@ public sealed class MicroBatcherClient<TJob, TJobResult> : IDisposable
     private readonly Object _processLock = new();
     private readonly Timer _flushTimer;
     private Boolean _isDisposed;
-    private Int64 _batchesProcessed;
-    private Int64 _jobsProcessed;
-
-    /// <summary>
-    /// Number of batches that have been processed since creation.
-    /// </summary>
-    public Int64 BatchesProcessed => _batchesProcessed;
-
-    /// <summary>
-    /// Number of jobs that have been processed since creation.
-    /// </summary>
-    public Int64 JobsProcessed => _jobsProcessed;
-
+    
     /// <summary>
     /// Normal constructor for batcher
     /// </summary>
@@ -42,9 +30,11 @@ public sealed class MicroBatcherClient<TJob, TJobResult> : IDisposable
         ArgumentNullException.ThrowIfNull(optionBuilder, nameof(optionBuilder));
 
         _processor = processor;
-        _options = optionBuilder?.Invoke(new()) ?? new();
-        
-        var delay = _options.MaxDelayPerJob == TimeSpan.Zero ? Timeout.InfiniteTimeSpan : _options.MaxDelayPerJob; // Timer uses `InfiniteTimeSpan` as it's disabled value
+        _options =  optionBuilder?.Invoke(new()) ?? new();
+
+        var delay = _options.MaxDelayPerJob == TimeSpan.Zero
+            ? Timeout.InfiniteTimeSpan
+            : _options.MaxDelayPerJob; // Timer uses `InfiniteTimeSpan` as it's disabled value
         _flushTimer = new(
             _ => ProcessNow(),
             null,
@@ -73,8 +63,6 @@ public sealed class MicroBatcherClient<TJob, TJobResult> : IDisposable
         var records = _queue.DequeueAll();
         if (records.Count == 0) return;
         _processor.Process(records);
-        Interlocked.Increment(ref _batchesProcessed);
-        Interlocked.Add(ref _jobsProcessed, records.Count);
     }
 
     /// <summary>
