@@ -32,14 +32,15 @@ public sealed class MicroBatcherClient<TJob, TJobResult> : IDisposable
         _processor = processor;
         _options =  optionBuilder?.Invoke(new()) ?? new();
 
-        var delay = _options.MaxDelayPerJob == TimeSpan.Zero
-            ? Timeout.InfiniteTimeSpan
-            : _options.MaxDelayPerJob; // Timer uses `InfiniteTimeSpan` as it's disabled value
+        var maxDelay = _options.MaxDelayPerJob == TimeSpan.Zero
+            ? Timeout.InfiniteTimeSpan // Timer uses `InfiniteTimeSpan` as it's disabled value
+            : _options.MaxDelayPerJob; 
+        
         _flushTimer = new(
             _ => ProcessNow(),
             null,
-            delay,
-            delay);
+            maxDelay,
+            maxDelay);
     }
 
     /// <summary>
