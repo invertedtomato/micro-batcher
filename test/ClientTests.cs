@@ -42,7 +42,7 @@ public class ClientTests
 
     private static async Task SubmitJobs(MicroBatcherClient<Job, JobResult> sut, Int32 count) =>
         await Task.WhenAll(Enumerable
-            .Range(0, 100)
+            .Range(0, count)
             .Select(i => new Job(i))
             .Select(sut.Submit));
 }
