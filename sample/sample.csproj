@@ -5,6 +5,8 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <AssemblyName>InvertedTomato.MicroBatcher.Sample</AssemblyName>
+        <RootNamespace>InvertedTomato.MicroBatcher.Sample</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

@@ -4,6 +4,15 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <AssemblyName>InvertedTomato.MicroBatcher</AssemblyName>
+        <RootNamespace>InvertedTomato.MicroBatcher</RootNamespace>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <WarningsNotAsErrors></WarningsNotAsErrors>
+        <NoWarn></NoWarn>
+        <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+        <ResourceLanguages>en</ResourceLanguages>
+        <AnalysisMode>All</AnalysisMode>
+        <Company>Inverted Tomato</Company>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
-
 </Project>

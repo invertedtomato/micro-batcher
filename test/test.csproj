@@ -7,6 +7,8 @@
 
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
+        <AssemblyName>InvertedTomato.MicroBatcher.Test</AssemblyName>
+        <RootNamespace>InvertedTomato.MicroBatcher.Test</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
