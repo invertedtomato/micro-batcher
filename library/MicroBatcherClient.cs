@@ -30,7 +30,6 @@ public sealed class MicroBatcherClient<TJob, TJobResult> : IDisposable
     /// </summary>
     public Int64 JobsProcessed => _jobsProcessed;
 
-
     /// <summary>
     /// Normal constructor for batcher
     /// </summary>

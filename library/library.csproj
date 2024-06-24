@@ -8,7 +8,7 @@
         <RootNamespace>InvertedTomato.MicroBatcher</RootNamespace>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <WarningsNotAsErrors></WarningsNotAsErrors>
-        <NoWarn></NoWarn>
+        <NoWarn>CA1303</NoWarn>
         <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
         <ResourceLanguages>en</ResourceLanguages>
         <AnalysisMode>All</AnalysisMode>

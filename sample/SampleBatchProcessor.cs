@@ -7,7 +7,7 @@ public sealed class SampleBatchProcessor : IBatchProcessor<SampleJob, SampleJobR
 {
     public void Process(Collection<JobRecord<SampleJob, SampleJobResult>> records)
     {
-        Console.WriteLine($"Processed {records.Count} jobs");
+        Console.WriteLine($"Processed batch of {records.Count} jobs");
         records.ForEach(x => x.TaskCompletionSource.SetResult(new(x.Job.Id)));
     }
 }
