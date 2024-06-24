@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using InvertedTomato.MicroBatcher.Extensions;
 
 namespace InvertedTomato.MicroBatcher.Sample;
 
@@ -7,7 +6,12 @@ public sealed class SampleBatchProcessor : IBatchProcessor<SampleJob, SampleJobR
 {
     public void Process(Collection<JobRecord<SampleJob, SampleJobResult>> records)
     {
-        Console.WriteLine($"Processed batch of {records.Count} jobs");
-        records.ForEach(x => x.TaskCompletionSource.SetResult(new(x.Job.Id)));
+        Console.WriteLine($"Processing batch of {records.Count} jobs:");
+        foreach (var record in records)
+        {
+            var job = record.Job;
+            var result = new SampleJobResult(job.Id);
+            Console.WriteLine($"  * {job} => {result}");
+        }
     }
 }
