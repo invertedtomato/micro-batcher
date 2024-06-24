@@ -6,30 +6,36 @@ namespace InvertedTomato.MicroBatcher;
 public readonly record struct Options()
 {
     /// <summary>
-    /// Target number of jobs to include in each batch. More or less may occur in edge scenarios.
+    /// Maximum number of jobs to include in each batch. More or less may occur in edge scenarios.
     /// </summary>
-    public Int32 JobCountTarget { get; private init; } = Int32.MaxValue;
+    public Int32 MaxJobsPerBatch { get; private init; } = Int32.MaxValue;
 
     /// <summary>
-    /// Set the target number of jobs to include in each batch. More or less may occur in edge scenarios.
+    /// Set the maximum number of jobs to include in each batch. More or less may occur in edge scenarios.
     /// </summary>
-    public Options WithJobCountTarget(Int32 value)
+    public Options WithMaxJobsPerBatch(Int32 value)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value, nameof(value));
         return this with
         {
-            JobCountTarget = value
+            MaxJobsPerBatch = value
         };
     }
 
-    // public TimeSpan MinDelay { get; private init; } = TimeSpan.MaxValue;
-    //
-    // public Options WithMinDelay(TimeSpan value)
-    // {
-    //     ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value.Ticks, nameof(value));
-    //     return this with
-    //     {
-    //         MinDelay = value
-    //     };
-    // }
+    /// <summary>
+    /// Maximum delay before processing a job. Used when the target job count isn't reached before this time elapses.
+    /// </summary>
+    public TimeSpan MaxDelayPerJob { get; private init; } = TimeSpan.Zero;
+
+    /// <summary>
+    /// Set the maximum delay before processing a job. Used when the target job count isn't reached before this time elapses. Set to `TimeSpan.Zero` to disable.
+    /// </summary>
+    public Options WithMaxDelayPerJob(TimeSpan value)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value.Ticks, nameof(value));
+        return this with
+        {
+            MaxDelayPerJob = value
+        };
+    }
 }

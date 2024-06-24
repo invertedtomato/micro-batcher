@@ -8,14 +8,32 @@ public class ClientTests
     [InlineData(1)]
     [InlineData(5)]
     [InlineData(10)]
-    public async Task CanProcessWhenBatchTargetReached(Int32 count)
+    public async Task CanProcessWhenMaxJobsReached(Int32 count)
     {
         var sut = GenerateSut(opt => opt
-            .WithJobCountTarget(count));
+            .WithMaxJobsPerBatch(count));
         var jobs = SubmitJobs(sut, count);
         sut.Dispose();
         sut.JobsProcessed.Should().Be(count);
         sut.BatchesProcessed.Should().Be(1);
+        var results = await jobs;
+        results.Length.Should().Be(count);
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(5)]
+    [InlineData(10)]
+    public async Task CanProcessWhenMaxDelayReached(Int32 count)
+    {
+        using var sut = GenerateSut(opt => opt
+            .WithMaxDelayPerJob(TimeSpan.FromSeconds(1)));
+        var jobs = SubmitJobs(sut, count);
+
+        await Task.Delay(TimeSpan.FromSeconds(2));
+        sut.JobsProcessed.Should().Be(count);
+        sut.BatchesProcessed.Should().Be(1);
+
         var results = await jobs;
         results.Length.Should().Be(count);
     }
@@ -32,7 +50,7 @@ public class ClientTests
     {
         const Int32 jobsPerBatch = 5;
         var sut = GenerateSut(opt => opt
-            .WithJobCountTarget(jobsPerBatch));
+            .WithMaxJobsPerBatch(jobsPerBatch));
         var jobs = SubmitJobs(sut, count);
         sut.Dispose();
         sut.BatchesProcessed.Should().Be((Int32)Math.Ceiling((Single)count / jobsPerBatch));

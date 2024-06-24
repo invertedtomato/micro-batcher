@@ -4,7 +4,7 @@ using InvertedTomato.MicroBatcher;
 using InvertedTomato.MicroBatcher.Sample;
 
 var batcher = new MicroBatcherClient<SampleJob, SampleJobResult>(new SampleBatchProcessor(), opts => opts
-        .WithJobCountTarget(2)
+        .WithMaxJobsPerBatch(2)
     // .WithMinDelay(TimeSpan.FromSeconds(1))
 );
 

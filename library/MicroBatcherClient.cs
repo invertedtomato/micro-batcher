@@ -16,6 +16,7 @@ public sealed class MicroBatcherClient<TJob, TJobResult> : IDisposable
     private readonly Options _options;
     private readonly ConcurrentQueue<JobRecord<TJob, TJobResult>> _queue = new();
     private readonly Object _processLock = new();
+    private readonly Timer _flushTimer;
     private Boolean _isDisposed;
     private Int64 _batchesProcessed;
     private Int64 _jobsProcessed;
@@ -42,6 +43,11 @@ public sealed class MicroBatcherClient<TJob, TJobResult> : IDisposable
 
         _processor = processor;
         _options = optionBuilder?.Invoke(new()) ?? new();
+        _flushTimer = new(
+            _ => ProcessNow(),
+            null,
+            TimeSpan.Zero,
+            _options.MaxDelayPerJob == TimeSpan.Zero ? Timeout.InfiniteTimeSpan : _options.MaxDelayPerJob);
     }
 
     /// <summary>
@@ -54,13 +60,11 @@ public sealed class MicroBatcherClient<TJob, TJobResult> : IDisposable
         {
             ObjectDisposedException.ThrowIf(_isDisposed, this);
             _queue.Enqueue(new(job, tcs));
-            if (_queue.Count >= _options.JobCountTarget) ProcessNow();
+            if (_queue.Count >= _options.MaxJobsPerBatch) ProcessNow();
         }
 
         return await tcs.Task.ConfigureAwait(false);
     }
-
-    // TODO: Max delay
 
     private void ProcessNow()
     {
@@ -80,6 +84,7 @@ public sealed class MicroBatcherClient<TJob, TJobResult> : IDisposable
         {
             if (_isDisposed) return;
             _isDisposed = true;
+            _flushTimer.Dispose();
             ProcessNow();
         }
     }
